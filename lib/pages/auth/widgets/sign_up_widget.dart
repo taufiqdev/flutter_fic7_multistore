@@ -44,7 +44,7 @@ class SignUpWidgetState extends State<SignUpWidget> {
       final model = RegisterRequestModel(
           email: _emailController.text,
           password: _passwordController.text,
-          username: _firstNameController.text);
+          name: _firstNameController.text);
       context.read<RegisterBloc>().add(RegisterEvent.register(model));
       isEmailVerified = true;
     } else {

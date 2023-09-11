@@ -4,16 +4,16 @@ import 'dart:convert';
 class RegisterRequestModel {
   final String email;
   final String password;
-  final String username;
+  final String name;
 
   RegisterRequestModel(
-      {required this.email, required this.password, required this.username});
+      {required this.email, required this.password, required this.name});
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'email': email,
       'password': password,
-      'username': username,
+      'name': name,
     };
   }
 
@@ -21,7 +21,7 @@ class RegisterRequestModel {
     return RegisterRequestModel(
       email: map['email'] ?? '',
       password: map['password'] ?? '',
-      username: map['username'] ?? '',
+      name: map['name'] ?? '',
     );
   }
 

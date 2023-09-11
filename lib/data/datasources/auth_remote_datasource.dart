@@ -1,7 +1,10 @@
 //import 'dart:html';
 
+import 'dart:convert';
+
 import 'package:dartz/dartz.dart';
 import 'package:flutter_fic7_multistore/common/global_variable.dart';
+import 'package:flutter_fic7_multistore/data/datasources/auth_local_datasource.dart';
 import '../models/auth_response_model.dart';
 import '../models/request/login_request_model.dart';
 import '../models/request/register_request_model.dart';
@@ -31,7 +34,7 @@ class AuthRemoteDatasource {
     //final response = await http.post('${GlobalVariables.baseUrl}/api/register')
     final headers = {
       'Accept': 'application/json',
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json',
     };
     final response = await http.post(
         Uri.parse('${GlobalVariables.baseUrl}/api/login'),
@@ -40,15 +43,18 @@ class AuthRemoteDatasource {
     if (response.statusCode == 200) {
       return Right(AuthResponseModel.fromJson(response.body));
     } else {
-      return const Left('Server Error');
+      final obj = jsonDecode(response.body);
+      //return const Left('Server Error');
+      return Left(obj['message']);
     }
   }
 
   Future<Either<String, String>> logout() async {
-    //final response = await http.post('${GlobalVariables.baseUrl}/api/register')
+    final token = await AuthLocalDatasource().getToken();
     final headers = {
       'Accept': 'application/json',
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
     };
     final response = await http.post(
         Uri.parse('${GlobalVariables.baseUrl}/api/logout'),
