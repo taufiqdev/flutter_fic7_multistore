@@ -1,10 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_fic7_multistore/bloc/products/products_bloc.dart';
 
+import '../../bloc/categories/categories_bloc.dart';
 import '../../utils/color_resources.dart';
-import '../utils/custom_themes.dart';
-import '../utils/dimensions.dart';
-import '../utils/images.dart';
-import 'base_widgets/title_row.dart';
+import '../../utils/custom_themes.dart';
+import '../../utils/dimensions.dart';
+import '../../utils/images.dart';
+
+import '../base_widgets/title_row.dart';
+import 'widgets/banner_widget.dart';
+import 'widgets/category_widget.dart';
+import 'widgets/product_item.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -26,6 +33,8 @@ class _HomePageState extends State<HomePage> {
   bool singleVendor = false;
   @override
   void initState() {
+    context.read<ProductsBloc>().add(const ProductsEvent.getAll());
+    context.read<CategoriesBloc>().add(const CategoriesEvent.getCategories());
     super.initState();
   }
 
@@ -171,22 +180,73 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
               ),
-              SliverPadding(
-                padding: EdgeInsets.symmetric(horizontal: 16),
-                sliver: SliverGrid(
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    mainAxisSpacing: 10.0,
-                    crossAxisSpacing: 10.0,
-                    childAspectRatio: 1.5 / 2,
-                  ),
-                  delegate: SliverChildBuilderDelegate(
-                    (BuildContext context, int index) {
-                      return const ProductItemWidget();
-                    },
-                    childCount: 20,
-                  ),
-                ),
+              BlocBuilder<ProductsBloc, ProductsState>(
+                builder: (context, state) {
+                  return state.maybeWhen(orElse: () {
+                    return SliverPadding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      sliver: SliverGrid(
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          mainAxisSpacing: 10.0,
+                          crossAxisSpacing: 10.0,
+                          childAspectRatio: 1.5 / 2,
+                        ),
+                        delegate: SliverChildBuilderDelegate(
+                          (BuildContext context, int index) {
+                            return const Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          },
+                          childCount: 1,
+                        ),
+                      ),
+                    );
+                  }, error: (message) {
+                    return SliverPadding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      sliver: SliverGrid(
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          mainAxisSpacing: 10.0,
+                          crossAxisSpacing: 10.0,
+                          childAspectRatio: 1.5 / 2,
+                        ),
+                        delegate: SliverChildBuilderDelegate(
+                          (BuildContext context, int index) {
+                            return Center(
+                              child: Text(message),
+                            );
+                          },
+                          childCount: 1,
+                        ),
+                      ),
+                    );
+                  }, loaded: (model) {
+                    return SliverPadding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      sliver: SliverGrid(
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          mainAxisSpacing: 10.0,
+                          crossAxisSpacing: 10.0,
+                          childAspectRatio: 1.5 / 2,
+                        ),
+                        delegate: SliverChildBuilderDelegate(
+                          (BuildContext context, int index) {
+                            return ProductItemWidget(
+                              product: model.data![index],
+                            );
+                          },
+                          childCount: model.data!.length,
+                        ),
+                      ),
+                    );
+                  });
+                },
               ),
             ],
           ),

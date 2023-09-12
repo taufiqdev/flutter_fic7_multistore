@@ -5,6 +5,7 @@ import 'package:flutter_fic7_multistore/pages/auth/auth_page.dart';
 
 import '../../bloc/logout/logout_bloc.dart';
 import '../../utils/images.dart';
+import '../home/home_page.dart';
 //import '../home/home_page.dart';
 
 class DashboardPage extends StatefulWidget {
@@ -34,14 +35,13 @@ class _HomePageState extends State<DashboardPage> {
     });
 
     _screens = [
-      //const HomePage(),
-      const Center(
+      const HomePage(),
+      /* const Center(
         child: Text('Home'),
-      ),
+      ), */
       const Center(
         child: Text('Orders'),
       ),
-
       Center(
         child: BlocConsumer<LogoutBloc, LogoutState>(
           listener: (context, state) {
@@ -88,7 +88,7 @@ class _HomePageState extends State<DashboardPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(token)),
+      //appBar: AppBar(title: Text(token)),
       key: _scaffoldKey,
       bottomNavigationBar: BottomNavigationBar(
         selectedItemColor: Theme.of(context).primaryColor,
