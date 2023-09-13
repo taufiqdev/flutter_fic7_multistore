@@ -14,5 +14,12 @@ class ProductsBloc extends Bloc<ProductsEvent, ProductsState> {
       final result = await ProductRemoteDatasource().getProducts();
       result.fold((l) => emit(_Error(l)), (r) => emit(_Loaded(r)));
     });
+
+    on<_GetByCategory>((event, emit) async {
+      emit(const _Loading());
+      final result = await ProductRemoteDatasource()
+          .getProductsByCategory(event.categoryId);
+      result.fold((l) => emit(_Error(l)), (r) => emit(_Loaded(r)));
+    });
   }
 }

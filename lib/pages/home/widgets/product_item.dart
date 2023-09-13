@@ -8,6 +8,7 @@ import '../../../utils/custom_themes.dart';
 import '../../../utils/dimensions.dart';
 import '../../../utils/images.dart';
 import '../../base_widgets/rating_bar.dart';
+import '../../products/product_detail.dart';
 
 class ProductItemWidget extends StatelessWidget {
   final Product product;
@@ -20,9 +21,11 @@ class ProductItemWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        /*  Navigator.push(context, MaterialPageRoute(builder: (context) {
-          return const ProductDetail();
-        })); */
+        Navigator.push(context, MaterialPageRoute(builder: (context) {
+          return ProductDetail(
+            product: product,
+          );
+        }));
       },
       child: Container(
         height: Dimensions.cardHeight,
