@@ -81,8 +81,9 @@ class _ProductDetailState extends State<ProductDetail> {
                                 top: Dimensions.paddingSizeSmall),
                             padding: const EdgeInsets.all(
                                 Dimensions.paddingSizeSmall),
-                            child: const ProductSpecification(
-                                productSpecification: 'Description'),
+                            child: ProductSpecification(
+                                productSpecification:
+                                    widget.product.description!),
                           ),
                           const SizedBox(),
                         ],
