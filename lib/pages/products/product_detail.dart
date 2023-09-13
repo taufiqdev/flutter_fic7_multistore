@@ -55,7 +55,9 @@ class _ProductDetailState extends State<ProductDetail> {
                 physics: const BouncingScrollPhysics(),
                 child: Column(
                   children: [
-                    ProductImageView(),
+                    ProductImageView(
+                      image: widget.product.imageProduct!,
+                    ),
                     Container(
                       transform: Matrix4.translationValues(0.0, -25.0, 0.0),
                       padding: const EdgeInsets.only(
@@ -70,7 +72,9 @@ class _ProductDetailState extends State<ProductDetail> {
                       ),
                       child: Column(
                         children: [
-                          const ProductTitleView(averageRatting: "0"),
+                          ProductTitleView(
+                            product: widget.product,
+                          ),
                           Container(
                             height: 250,
                             margin: const EdgeInsets.only(
