@@ -1,25 +1,36 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_fic7_multistore/bloc/checkout/checkout_bloc.dart';
+import 'package:flutter_fic7_multistore/utils/price_ext.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+
+import 'package:flutter_fic7_multistore/data/models/products_response_model.dart';
 
 import '../../../utils/color_resources.dart';
 import '../../../utils/custom_themes.dart';
 import '../../../utils/dimensions.dart';
 import '../../../utils/images.dart';
 import '../../base_widgets/button/custom_button.dart';
-//import '../../cart/cart_page.dart';
 
 class CartBottomSheet extends StatefulWidget {
+  final Product product;
   final Function? callback;
-  const CartBottomSheet({Key? key, this.callback}) : super(key: key);
+  const CartBottomSheet({
+    Key? key,
+    required this.product,
+    this.callback,
+  }) : super(key: key);
 
   @override
   CartBottomSheetState createState() => CartBottomSheetState();
 }
 
 class CartBottomSheetState extends State<CartBottomSheet> {
-  route(bool isRoute, String message) async {}
+  //route(bool isRoute, String message) async {}
+  int quantity = 1;
+
   @override
   void initState() {
     super.initState();
@@ -82,7 +93,8 @@ class CartBottomSheetState extends State<CartBottomSheet> {
                             borderRadius: BorderRadius.circular(5),
                             child: FadeInImage.assetNetwork(
                               placeholder: Images.placeholder,
-                              image: 'https://picsum.photos/250',
+                              //image: 'https://picsum.photos/250',
+                              image: widget.product.imageProduct!,
                               imageErrorBuilder: (c, o, s) =>
                                   Image.asset(Images.placeholder),
                             ),
@@ -93,7 +105,7 @@ class CartBottomSheetState extends State<CartBottomSheet> {
                           child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text('Product Name',
+                                Text(widget.product.name!,
                                     style: titilliumRegular.copyWith(
                                         fontSize: Dimensions.fontSizeLarge),
                                     maxLines: 2,
@@ -119,7 +131,7 @@ class CartBottomSheetState extends State<CartBottomSheet> {
                       const SizedBox(width: Dimensions.paddingSizeDefault),
                       const SizedBox(width: Dimensions.paddingSizeDefault),
                       Text(
-                        'Rp 2000.000',
+                        '${widget.product.price}'.formatPrice(),
                         style: titilliumRegular.copyWith(
                             color: ColorResources.getPrimary(context),
                             fontSize: Dimensions.fontSizeExtraLarge),
@@ -132,28 +144,55 @@ class CartBottomSheetState extends State<CartBottomSheet> {
               const SizedBox(
                 height: Dimensions.paddingSizeSmall,
               ),
-              const Row(children: [
-                Text('Quantity', style: robotoBold),
-                QuantityButton(
+              Row(children: [
+                const Text('Quantity', style: robotoBold),
+                /* QuantityButton(
                     isIncrement: false,
                     quantity: 10,
                     stock: 10,
                     minimumOrderQuantity: 1,
-                    digitalProduct: true),
-                Text('10', style: titilliumSemiBold),
-                QuantityButton(
-                    isIncrement: true,
-                    quantity: 10,
-                    stock: 10,
-                    minimumOrderQuantity: 1,
-                    digitalProduct: true),
+                    digitalProduct: true), */
+                ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        quantity -= 1;
+                      });
+                    },
+                    child: Text('-')),
+                SizedBox(
+                  width: 8,
+                ),
+                Text('${quantity}', style: titilliumSemiBold),
+                SizedBox(
+                  width: 8,
+                ),
+                ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        quantity += 1;
+                      });
+                    },
+                    child: Text('+')),
+                /* InkWell(
+                  onTap: () {
+                    setState(() {
+                      quantity += 1;
+                    });
+                  },
+                  child: QuantityButton(
+                      isIncrement: true,
+                      quantity: quantity,
+                      stock: 10,
+                      minimumOrderQuantity: 1,
+                      digitalProduct: true),
+                ), */
               ]),
               const SizedBox(height: Dimensions.paddingSizeSmall),
               Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                 const Text('Total Price', style: robotoBold),
                 const SizedBox(width: Dimensions.paddingSizeSmall),
                 Text(
-                  'Rp 4.000.000',
+                  '${widget.product.price! * quantity}'.formatPrice(),
                   style: titilliumBold.copyWith(
                       color: ColorResources.getPrimary(context),
                       fontSize: Dimensions.fontSizeLarge),
@@ -166,6 +205,10 @@ class CartBottomSheetState extends State<CartBottomSheet> {
                     child: CustomButton(
                         buttonText: 'Add to Cart',
                         onTap: () {
+                          context.read<CheckoutBloc>().add(
+                              CheckoutEvent.addToCart(
+                                  widget.product, quantity));
+                          Navigator.pop(context);
                           /* Navigator.of(context).push(MaterialPageRoute(
                               builder: (context) => const CartPage())); */
                         }),
@@ -209,7 +252,7 @@ class QuantityButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return IconButton(
       onPressed: () {
-        if (!isIncrement && quantity! > 1) {
+        /* if (!isIncrement && quantity! > 1) {
           if (quantity! > minimumOrderQuantity!) {
           } else {
             Fluttertoast.showToast(
@@ -221,7 +264,7 @@ class QuantityButton extends StatelessWidget {
                 textColor: Colors.white,
                 fontSize: 16.0);
           }
-        } else if (isIncrement && quantity! < stock! || digitalProduct) {}
+        } else if (isIncrement && quantity! < stock! || digitalProduct) {} */
       },
       icon: Container(
         width: 40,

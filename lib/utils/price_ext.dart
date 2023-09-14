@@ -9,8 +9,7 @@ extension PriceExtension on String {
             thousandSeparator: '.',
             decimalSeparator: ',',
             symbolAndNumberSeparator: ' ',
-            fractionDigits: 2,
-            compactFormatType: CompactFormatType.sort));
+            fractionDigits: 2));
     return fmf.output.symbolOnLeft;
   }
 }
