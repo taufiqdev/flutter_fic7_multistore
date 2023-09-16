@@ -5,6 +5,7 @@ part of 'checkout_bloc.dart';
 class CheckoutState with _$CheckoutState {
   //const factory CheckoutState.initial() = _Initial;
   const factory CheckoutState.loaded(List<ProductQuantity> products) = _Loaded;
+  const factory CheckoutState.loading() = _Loading;
 }
 
 class ProductQuantity {
@@ -14,4 +15,14 @@ class ProductQuantity {
     required this.product,
     required this.quantity,
   });
+
+  @override
+  bool operator ==(covariant ProductQuantity other) {
+    if (identical(this, other)) return true;
+
+    return other.product == product && other.quantity == quantity;
+  }
+
+  @override
+  int get hashCode => product.hashCode ^ quantity.hashCode;
 }
