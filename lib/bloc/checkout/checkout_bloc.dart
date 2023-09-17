@@ -31,7 +31,10 @@ class CheckoutBloc extends Bloc<CheckoutEvent, CheckoutState> {
                 productQuantity.quantity + event.quantity;
           }
         }
-        emit(_Loaded([...currentState.products]));
+        final newState = currentState.products;
+        //emit(_Loaded([...currentState.products]));
+        emit(const _Loading());
+        emit(_Loaded(newState));
       } else {
         emit(_Loaded([...currentState.products, productQuantity]));
         //emit(_Loaded(state as _Loaded));
