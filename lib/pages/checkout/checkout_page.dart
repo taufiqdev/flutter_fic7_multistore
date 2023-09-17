@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_fic7_multistore/data/models/request/order_request_model.dart';
 import 'package:flutter_fic7_multistore/utils/price_ext.dart';
 //import 'package:multistore_app/pages/base_widgets/payment/payment_page.dart';
 
 import '../../bloc/checkout/checkout_bloc.dart';
+import '../../bloc/order/order_bloc.dart';
 import '../../utils/color_resources.dart';
 import '../../utils/custom_themes.dart';
 import '../../utils/dimensions.dart';
 import '../../utils/images.dart';
 import '../base_widgets/amount_widget.dart';
+import '../base_widgets/payment/payment_page.dart';
 //import '../base_widgets/amount_widget.dart';
 
 class CheckoutPage extends StatefulWidget {
@@ -23,6 +26,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
   int subTotal = 0;
   int totalPrice = 0;
   int shippingCost = 22000;
+  List<Item> items = [];
 
   @override
   Widget build(BuildContext context) {
@@ -32,6 +36,9 @@ class _CheckoutPageState extends State<CheckoutPage> {
         return state.maybeWhen(orElse: () {
           return CircularProgressIndicator();
         }, loaded: (products) {
+          items = products
+              .map((e) => Item(id: e.product.id!, qty: e.quantity))
+              .toList();
           products.forEach((element) {
             subTotal += element.quantity * element.product.price!;
           });
@@ -190,35 +197,62 @@ class _CheckoutPageState extends State<CheckoutPage> {
           );
         });
       }),
-      bottomNavigationBar: InkWell(
-        onTap: () {
-          /*  Navigator.push(context, MaterialPageRoute(builder: (context) {
-            return const PaymentPage(
-                url:
-                    'https://app.sandbox.midtrans.com/snap/v3/redirection/ab82a184-d0dd-4f6f-b9b3-977e0223f801');
-          })); */
+      bottomNavigationBar: BlocConsumer<OrderBloc, OrderState>(
+        listener: (context, state) {
+          state.maybeWhen(
+              orElse: () {},
+              loaded: (model) {
+                Navigator.push(context, MaterialPageRoute(builder: (context) {
+                  return const PaymentPage(
+                      url:
+                          'https://app.sandbox.midtrans.com/snap/v3/redirection/ab82a184-d0dd-4f6f-b9b3-977e0223f801');
+                }));
+              });
         },
-        child: Container(
-          height: 60,
-          padding: const EdgeInsets.symmetric(
-              horizontal: Dimensions.paddingSizeLarge,
-              vertical: Dimensions.paddingSizeDefault),
-          decoration: BoxDecoration(
-            color: ColorResources.getPrimary(context),
-          ),
-          child: Center(
-              child: Builder(
-            builder: (context) => Padding(
-              padding: EdgeInsets.symmetric(
-                  horizontal: MediaQuery.of(context).size.width / 2.9),
-              child: Text('Proceed',
-                  style: titilliumSemiBold.copyWith(
-                    fontSize: Dimensions.fontSizeExtraLarge,
-                    color: Theme.of(context).cardColor,
+        builder: (context, state) {
+          return state.maybeWhen(
+            orElse: () {
+              return InkWell(
+                onTap: () {
+                  final requestModel = OrderRequestModel(
+                      items: items,
+                      totalPrice: totalPrice,
+                      deliveryAddress: _shoppingAddress.text,
+                      sellerId: 4);
+                  context.read<OrderBloc>().add(OrderEvent.order(requestModel));
+                },
+                child: Container(
+                  height: 60,
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: Dimensions.paddingSizeLarge,
+                      vertical: Dimensions.paddingSizeDefault),
+                  decoration: BoxDecoration(
+                    color: ColorResources.getPrimary(context),
+                  ),
+                  child: Center(
+                      child: Builder(
+                    builder: (context) => Padding(
+                      padding: EdgeInsets.symmetric(
+                          horizontal: MediaQuery.of(context).size.width / 2.9),
+                      child: Text('Proceed',
+                          style: titilliumSemiBold.copyWith(
+                            fontSize: Dimensions.fontSizeExtraLarge,
+                            color: Theme.of(context).cardColor,
+                          )),
+                    ),
                   )),
-            ),
-          )),
-        ),
+                ),
+              );
+            },
+            loading: () {
+              return Center(
+                child: CircularProgressIndicator(),
+              );
+            }, /*  error: (message) {
+            return Text(message);
+          } */
+          );
+        },
       ),
     );
   }
